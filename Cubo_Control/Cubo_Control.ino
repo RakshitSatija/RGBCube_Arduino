@@ -6,6 +6,17 @@
 #define CUBE_SIZE 6
 #define TEXTSCROLL_NUM 6
 #define FRAME_TIME_DEFAULT 300
+#define FRAME_TIME_MIN 20
+#define MAXBRIGHT 4000
+#define CYCLES 20
+#define SPEED_DIV 50
+
+//EXTERNAL ANIMATIONS
+#include "wallsVertical.h"
+#include "font6.h"
+#include "cube_Grow.h"
+#include "waterfall.h"
+
 uint8_t layers[]={A0,A1,A2,A3,A4,A5};
 
 //FRAME & LAYER
@@ -13,6 +24,10 @@ byte curAnim;
 //LayerDuration 2860 min.
 uint16_t LayerDuration = 2200;
 uint16_t FRAME_TIME=FRAME_TIME_DEFAULT;
+//Default Frame Times for all Animations (see switch case for numbers)
+uint16_t ANIM_TIMES[] = {FRAME_TIME_DEFAULT,FRAME_TIME_DEFAULT,FRAME_TIME_DEFAULT,FRAME_TIME_DEFAULT,
+ANI_CUBE_GROW_FRAMETIME,FRAME_TIME_DEFAULT,FRAME_TIME_DEFAULT,FRAME_TIME_MIN,FRAME_TIME_DEFAULT,
+FRAME_TIME_DEFAULT,FRAME_TIME_DEFAULT};
 unsigned long frameTime=0;
 uint8_t layer = 0;
 uint16_t FrameCount=0;
@@ -26,7 +41,7 @@ int msgeqOut=A6;
 const uint8_t MSGEQSCALE=1024/CUBE_SIZE;
 
 //BRIGHTNESS, ANIMATION UTILITIES
-uint16_t maxbright=4000;
+uint16_t maxBright= MAXBRIGHT;
 int brightR;
 int brightG;
 int brightB;
@@ -50,20 +65,16 @@ uint8_t textChar = 0;
   int led =5;
 #endif
 
-//EXTERNAL ANIMATIONS
-#include "wallsVertical.h"
-#include "font6.h"
-#include "cube_Grow.h"
-#include "waterfall.h"
+
 void setup()
 {
   //Set Directions for analog Pins( MSGEQOUT,Layer ANODES)
   DDRC= DDRC|B10111111;
   PORTC=PORTC|B00111111;
   Tlc.init(0);
-   brightR=maxbright;
-   brightG=maxbright;
-   brightB=maxbright;
+   brightR=maxBright;
+   brightG=maxBright;
+   brightB=maxBright;
    color=0;
    curAnim=0;
 
@@ -171,12 +182,6 @@ void loop()
 //Execute Command
 void BTEvent()
 {
-	/*
-        while(Serial.available())
-        {
-          c=(byte)Serial.read();
-          serialData+=c;
-        }*/
       #if DEBUG
         Serial.println(String(serialData));
         while(Serial.available())
@@ -186,21 +191,21 @@ void BTEvent()
         if(serialData[0]=='A')
         {
             curAnim=String(serialData).substring(1).toInt();
-      			brightR = maxbright;
-      			brightG = maxbright;
-      			brightB = maxbright;
+      			brightR = maxBright;
+      			brightG = maxBright;
+      			brightB = maxBright;
             FRAME_TIME=FRAME_TIME_DEFAULT;
 			      FrameCount = 0;
             #if DEBUG
             Serial.print("Switched Anim: ");
 			      Serial.println(curAnim);
             #endif
-			//WALLS VERTICAL
+			//CUBE GROW
             if(curAnim==4)
             {
-               animation=&ani_wallsvertical[0][0];
-               FRAME_TIME=ANI_WALLSVERTICAL_FRAMETIME;
-               maxCount=ANI_WALLSVERTICAL_FRAMES;
+               animation=&ani_cube_grow[0][0];
+               FRAME_TIME=ANI_CUBE_GROW_FRAMETIME;
+               maxCount=ANI_CUBE_GROW_FRAMES;
             }
 			//MSGEQ7
             else if(curAnim==7)
@@ -226,6 +231,29 @@ void BTEvent()
 			//maxCount = ANI_FONT6_FRAMES+1;
 			maxCount=(text.length()-1)*6;
 		}
+		//BRIGHTNESS
+		else if (serialData[0] == 'B')
+		{
+			maxBright = String(serialData).substring(1).toInt();
+			if (maxBright > MAXBRIGHT || maxBright < 0)
+				maxBright = MAXBRIGHT;
+			blueScale = maxBright / 3;
+			redgreenScale = maxBright / 7;
+			cyclestep=maxBright / CYCLES;
+		}
+		//BRIGHTNESS
+		else if (serialData[0] == 'F')
+		{
+			//Break if curAnim is Music Spectrum
+			if (curAnim != 7)
+			{
+				int div = String(serialData).substring(1).toInt();
+				FRAME_TIME = ANIM_TIMES[curAnim] * (SPEED_DIV / div);
+				if (FRAME_TIME < FRAME_TIME_MIN)
+					FRAME_TIME = FRAME_TIME_MIN;
+			}
+		}
+
     #if DEBUG
       if(serialData=="off")
         ledOff();

@@ -3,14 +3,15 @@
 #define RED 2
 #define GREEN 1
 #define BLUE 0
-uint8_t CYCLESTEP = maxbright / 20;
-int blueScale = maxbright / 3;
-int redgreenScale = maxbright / 7;
+
+uint8_t cyclestep = maxBright / CYCLES;
+int blueScale = maxBright / 3;
+int redgreenScale = maxBright / 7;
 
 #define SETLED(X,Y,L,COLOR,VAL)	ValueLed[(L)][(X) * 3 + (Y)* CUBE_SIZE * 3 + (COLOR)] = (VAL);
 
 //Sets new Values for next layer and sends to TLCs, switches Anodes
-void CubeUpdate(int layerno)  
+inline void CubeUpdate(int layerno)  
 {
   //unsigned long micro=micros();
 	for (int y = 0; y < CUBE_SIZE; y++)
@@ -59,7 +60,7 @@ void testLed(int pin, int layer)
 }
 
 //----UTILITIES FOR ANIMATIONS
-void AllOff()
+inline void AllOff()
 {
   //micro=micros();
   
@@ -83,7 +84,7 @@ void AllInit()
 	digitalWrite(layers[0], LOW);  //layer 1
 }
 
-void AllRed()
+inline void AllRed()
 {
 
 	for (int l = 0; l < CUBE_SIZE; l++)
@@ -92,7 +93,7 @@ void AllRed()
 				SETLED(x, y ,l,RED, brightR)
 
 }
-void AllGreen()
+inline void AllGreen()
 {
 
 	for (int l = 0; l < CUBE_SIZE; l++)
@@ -100,7 +101,7 @@ void AllGreen()
 			for (int x = 0; x < CUBE_SIZE; x++)
 				SETLED(x,y ,l,GREEN,brightG)
 }
-void AllBlue()
+inline void AllBlue()
 {
 	for (int l = 0; l < CUBE_SIZE; l++)
 		for (int y = 0; y < CUBE_SIZE; y++)
@@ -108,20 +109,20 @@ void AllBlue()
 				SETLED(x, y ,l,BLUE, brightB)
 }
 
-void setXRow(uint8_t y,uint8_t z, uint8_t color)
+inline void setXRow(uint8_t y,uint8_t z, uint8_t color)
 {
 	for (int x = 0; x < CUBE_SIZE; x++)
-			SETLED(x, y, z, color, maxbright)
+			SETLED(x, y, z, color, maxBright)
 }
-void setYRow(uint8_t x, uint8_t z, uint8_t color)
+inline void setYRow(uint8_t x, uint8_t z, uint8_t color)
 {
 	for (int y = 0; y < CUBE_SIZE; y++)
-		SETLED(x, y, z, color, maxbright)
+		SETLED(x, y, z, color, maxBright)
 }
-void setZRow(uint8_t x, uint8_t y, uint8_t color)
+inline void setZRow(uint8_t x, uint8_t y, uint8_t color)
 {
 	for (int z = 0; z < CUBE_SIZE;z++)
-		SETLED(x, y, z, color, maxbright)
+		SETLED(x, y, z, color, maxBright)
 }
 
 void setPaneVal(int pane, int val)
@@ -129,7 +130,7 @@ void setPaneVal(int pane, int val)
 	for (int l = 0; l < val; l++)
  {
 		for (int y = 0; y < CUBE_SIZE; y++)
-			SETLED(pane, y, l, RED, maxbright)
+			SETLED(pane, y, l, RED, maxBright)
  }
 	//ValueLed[l][+ y * CUBE_SIZE * 3] = val; //RED ONLY
    // ValueLed[l][x*3+1+y*CUBE_SIZE*3]=val;
@@ -140,24 +141,24 @@ void setXYPane(uint8_t z,uint8_t color)
 {
 	for (int y = 0; y < CUBE_SIZE;y++)
 		for (int x = 0; x< CUBE_SIZE; x++)
-			SETLED(x, y, z, color, maxbright)
+			SETLED(x, y, z, color, maxBright)
 }
 void setXZPane(uint8_t y, uint8_t color)
 {
 	for (int z = 0; z < CUBE_SIZE; z++)
 		for (int x = 0; x< CUBE_SIZE; x++)
-			SETLED(x, y, z, color, maxbright)
+			SETLED(x, y, z, color, maxBright)
 }
 void setYZPane(uint8_t x, uint8_t color)
 {
 	for (int z = 0; z < CUBE_SIZE; z++)
 		for (int y = 0; y < CUBE_SIZE; y++)
-			SETLED(x, y, z, color, maxbright)
+			SETLED(x, y, z, color, maxBright)
 }
 //-----ANIMATIONS
 void randomLedsFull()
 {
-
+  AllOff();
 	for (uint8_t j = 0; j < CUBE_SIZE; j++)
 	{
 		for (uint8_t x = 0; x < CUBE_SIZE; x++)
@@ -165,7 +166,7 @@ void randomLedsFull()
 			for (uint8_t y = 0; y < CUBE_SIZE; y++)
 			{
 				uint8_t rand = random8(3);
-        SETLED(x,y,j,rand,maxbright);
+        SETLED(x,y,j,rand,maxBright);
         /*
 				if (rand == BLUE)
 					//Blue
@@ -188,11 +189,11 @@ void randomLeds(int red, int green, int blue)
 {
   AllOff();
 	for (int p = red; p > 0; p--)
-		SETLED(random8(CUBE_SIZE) , random8(CUBE_SIZE),random8(CUBE_SIZE),RED,maxbright)
+		SETLED(random8(CUBE_SIZE) , random8(CUBE_SIZE),random8(CUBE_SIZE),RED,maxBright)
 	for (int p = green; p > 0; p--)
-		SETLED(random8(CUBE_SIZE) , random8(CUBE_SIZE),random8(CUBE_SIZE),GREEN,maxbright)
+		SETLED(random8(CUBE_SIZE) , random8(CUBE_SIZE),random8(CUBE_SIZE),GREEN,maxBright)
 	for (int p = blue; p > 0; p--)
-		SETLED(random8(CUBE_SIZE) , random8(CUBE_SIZE),random8(CUBE_SIZE),BLUE,maxbright)
+		SETLED(random8(CUBE_SIZE) , random8(CUBE_SIZE),random8(CUBE_SIZE),BLUE,maxBright)
 	FrameCount = 0;
  
 
@@ -274,7 +275,7 @@ void ColorCycle()
 		maxCount=31;
 		brightR=0;
 		brightG=0;
-		brightB=maxbright;
+		brightB=maxBright;
 	}
 	else if(FrameCount<11)
 	{
@@ -302,18 +303,22 @@ void RGBColorCycle()
 {
 	if (FrameCount == 0)
 	{
-		brightR = maxbright;
+		brightR = maxBright;
 		brightG = 0;
 		brightB = 0;
 	}
-	 else if (brightG < (CYCLESTEP*20))
-		brightG += CYCLESTEP;
-	else if (brightB < (CYCLESTEP * 20))
-		brightB += CYCLESTEP;
-	else if (brightG > 0)
-		brightG -= CYCLESTEP;
-	else if (brightB > 0)
-		brightB -= CYCLESTEP;
+	 else if (FrameCount< CYCLES)
+		brightG += cyclestep;
+   else if (FrameCount< 2*CYCLES)
+    brightR -= cyclestep;
+	else if (FrameCount< 3*CYCLES)
+		brightB += cyclestep;
+	else if (FrameCount< 4*CYCLES)
+		brightG -= cyclestep;
+  else if (FrameCount< 5*CYCLES)
+    brightR += cyclestep;
+	else if (FrameCount< 6*CYCLES)
+		brightB -= cyclestep;
 	else
 		FrameCount = 0;
 	//else if(FrameCount==31){FrameCount=0;}
@@ -334,12 +339,12 @@ void Snake()
 			for (int i = 0; i <= temp / (CUBE_SIZE*CUBE_SIZE); i++)
 			{
 				for (int j = 0; j <= temp % (CUBE_SIZE*CUBE_SIZE); j++)
-					SETLED(j%CUBE_SIZE , j / CUBE_SIZE ,i,RED, maxbright)
+					SETLED(j%CUBE_SIZE , j / CUBE_SIZE ,i,RED, maxBright)
 				if (i > 0)
 					for (int k = 0; k < i; k++)
 						for (int x = 0; x < CUBE_SIZE; x++)
 							for (int y = 0; y < CUBE_SIZE; y++)
-								SETLED(x , y ,k,RED, maxbright)
+								SETLED(x , y ,k,RED, maxBright)
 			}
 		}
 
@@ -351,12 +356,12 @@ void Snake()
 		for (int i = 0; i <= temp / 16; i++)
 		{
 			for (int j = 0; j <= temp % 16; j++)
-				SETLED(j % 4 ,j / 4 ,i,GREEN,maxbright)
+				SETLED(j % 4 ,j / 4 ,i,GREEN,maxBright)
 			if (i > 0)
 				for (int k = 0; k < i; k++)
 					for (int x = 0; x < 4; x++)
 						for (int y = 0; y < 4; y++)
-							SETLED(x ,y ,k,GREEN,maxbright)
+							SETLED(x ,y ,k,GREEN,maxBright)
 		}
 	}
 	if (FrameCount > 127)
@@ -366,12 +371,12 @@ void Snake()
 		for (int i = 0; i <= temp / 16; i++)
 		{
 			for (int j = 0; j <= temp % 16; j++)
-				SETLED(j % 4 ,j / 4 ,i,BLUE,maxbright)
+				SETLED(j % 4 ,j / 4 ,i,BLUE,maxBright)
 			if (i > 0)
 				for (int k = 0; k < i; k++)
 					for (int x = 0; x < 4; x++)
 						for (int y = 0; y < 4; y++)
-							SETLED(x ,y ,k,BLUE,maxbright)
+							SETLED(x ,y ,k,BLUE,maxBright)
 		}
 	}
 	if (FrameCount > 191)
@@ -590,132 +595,132 @@ void Cubes4()
 {
 	if(FrameCount==0)
 	{	
-		brightR=maxbright;
+		brightR=maxBright;
 		brightG=0;
 		brightB=0;
 		littleCube(1,0,2);		//Rot
 		
 		brightR=0;
-		brightG=maxbright;
+		brightG=maxBright;
 		brightB=0;
 		littleCube(3,2,2);		//Grün
 		
 		brightR=0;
 		brightG=0;
-		brightB=maxbright;
+		brightB=maxBright;
 		littleCube(1,2,0);		//Blau
 		
-		brightR=maxbright/2;
+		brightR=maxBright/2;
 		brightG=0;
-		brightB=maxbright/2;
+		brightB=maxBright/2;
 		littleCube(1,0,0);		//Rot+Blau
 		
-		brightR=maxbright/2;
-		brightG=maxbright/2;
+		brightR=maxBright/2;
+		brightG=maxBright/2;
 		brightB=0;
 		littleCube(3,0,2);		//Rot+Grün
 		
 		brightR=0;
-		brightG=maxbright/2;
-		brightB=maxbright/2;
+		brightG=maxBright/2;
+		brightB=maxBright/2;
 		littleCube(3,2,0);		//Blau+Grün
 
-                brightR=maxbright;
-		brightG=maxbright/2;
-		brightB=maxbright/4;
+                brightR=maxBright;
+		brightG=maxBright/2;
+		brightB=maxBright/4;
 		littleCube(3,0,0);		//Rot+Grün+(blau+rot)
 		
-		brightR=maxbright/2;
-		brightG=maxbright;
-		brightB=maxbright/4;
+		brightR=maxBright/2;
+		brightG=maxBright;
+		brightB=maxBright/4;
 		littleCube(1,2,2);		//Grün+Blau+(grün+rot)
 
 		
 	}
       else if(FrameCount==1)
 	{	
-		brightR=maxbright;
+		brightR=maxBright;
 		brightG=0;
 		brightB=0;
 		littleCube(3,2,2);		//Rot
 		
 		brightR=0;
-		brightG=maxbright;
+		brightG=maxBright;
 		brightB=0;
 		littleCube(1,0,2);		//Grün
 		
 		brightR=0;
 		brightG=0;
-		brightB=maxbright;
+		brightB=maxBright;
 		littleCube(1,0,0);		//Blau
 		
-		brightR=maxbright/2;
+		brightR=maxBright/2;
 		brightG=0;
-		brightB=maxbright/2;
+		brightB=maxBright/2;
 		littleCube(1,2,0);		//Rot+Blau
 		
-		brightR=maxbright/2;
-		brightG=maxbright/2;
+		brightR=maxBright/2;
+		brightG=maxBright/2;
 		brightB=0;
 		littleCube(3,2,0);		//Rot+Grün
 		
 		brightR=0;
-		brightG=maxbright/2;
-		brightB=maxbright/2;
+		brightG=maxBright/2;
+		brightB=maxBright/2;
 		littleCube(3,0,2);		//Blau+Grün
 
-                brightR=maxbright;
-		brightG=maxbright/2;
-		brightB=maxbright/4;
+                brightR=maxBright;
+		brightG=maxBright/2;
+		brightB=maxBright/4;
 		littleCube(1,2,2);		//Rot+Grün+(blau+rot)
 		
-		brightR=maxbright/2;
-		brightG=maxbright;
-		brightB=maxbright/4;
+		brightR=maxBright/2;
+		brightG=maxBright;
+		brightB=maxBright/4;
 		littleCube(3,0,0);		//Grün+Blau+(grün+rot)
 
 		
 	}
 else if(FrameCount==2)
 	{	
-		brightR=maxbright;
+		brightR=maxBright;
 		brightG=0;
 		brightB=0;
 		littleCube(1,2,0);		//Rot
 		
 		brightR=0;
-		brightG=maxbright;
+		brightG=maxBright;
 		brightB=0;
 		littleCube(1,0,0);		//Grün
 		
 		brightR=0;
 		brightG=0;
-		brightB=maxbright;
+		brightB=maxBright;
 		littleCube(1,0,2);		//Blau
 		
-		brightR=maxbright/2;
+		brightR=maxBright/2;
 		brightG=0;
-		brightB=maxbright/2;
+		brightB=maxBright/2;
 		littleCube(3,2,2);		//Rot+Blau
 		
-		brightR=maxbright/2;
-		brightG=maxbright/2;
+		brightR=maxBright/2;
+		brightG=maxBright/2;
 		brightB=0;
 		littleCube(3,0,0);		//Rot+Grün
 		
 		brightR=0;
-		brightG=maxbright/2;
-		brightB=maxbright/2;
+		brightG=maxBright/2;
+		brightB=maxBright/2;
 		littleCube(1,2,0);		//Blau+Grün
 
-                brightR=maxbright;
-		brightG=maxbright/2;
-		brightB=maxbright/4;
+                brightR=maxBright;
+		brightG=maxBright/2;
+		brightB=maxBright/4;
 		littleCube(3,0,2);		//Rot+Grün+(blau+rot)
 		
-		brightR=maxbright/2;
-		brightG=maxbright;
-		brightB=maxbright/4;
+		brightR=maxBright/2;
+		brightG=maxBright;
+		brightB=maxBright/4;
 		littleCube(3,2,0);		//Grün+Blau+(grün+rot)
 
 		FrameCount=0;
